@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 import { useState } from "react";
 import Link from "next/link";
@@ -7,6 +6,28 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSignUp = async () => {
+    setLoading(true);
+    setMessage("");
+
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      setMessage(data.error);
+    } else {
+      setMessage("Account created! Check your email to confirm.");
+    }
+    setLoading(false);
+  };
 
   return (
     <main style={{
@@ -24,27 +45,45 @@ export default function SignUp() {
           </Link>
           <p style={{ color: "#8884a0", fontSize: 14, marginTop: ".5rem" }}>Create your account to start scanning</p>
         </div>
+
         <div style={{ background: "#13131c", border: "1px solid #ffffff14", borderRadius: 16, padding: "2rem" }}>
           <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.4rem", marginBottom: "1.5rem" }}>Get started free</h2>
+
+          {message && (
+            <div style={{
+              background: message.includes("error") || message.includes("Error") ? "rgba(239,68,68,0.1)" : "rgba(56,217,169,0.1)",
+              border: `1px solid ${message.includes("error") || message.includes("Error") ? "rgba(239,68,68,0.3)" : "rgba(56,217,169,0.3)"}`,
+              borderRadius: 8, padding: ".75rem 1rem", marginBottom: "1rem", fontSize: 13,
+              color: message.includes("error") || message.includes("Error") ? "#f87171" : "#38d9a9"
+            }}>
+              {message}
+            </div>
+          )}
+
           <div style={{ marginBottom: "1rem" }}>
             <label style={{ fontSize: 13, color: "#8884a0", display: "block", marginBottom: 6 }}>Full name</label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Smith"
               style={{ width: "100%", background: "#0a0a0f", border: "1px solid #ffffff22", borderRadius: 8, padding: ".75rem 1rem", color: "#f0eff8", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
           </div>
+
           <div style={{ marginBottom: "1rem" }}>
             <label style={{ fontSize: 13, color: "#8884a0", display: "block", marginBottom: 6 }}>Email address</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
               style={{ width: "100%", background: "#0a0a0f", border: "1px solid #ffffff22", borderRadius: 8, padding: ".75rem 1rem", color: "#f0eff8", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
           </div>
+
           <div style={{ marginBottom: "1.5rem" }}>
             <label style={{ fontSize: 13, color: "#8884a0", display: "block", marginBottom: 6 }}>Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters"
               style={{ width: "100%", background: "#0a0a0f", border: "1px solid #ffffff22", borderRadius: 8, padding: ".75rem 1rem", color: "#f0eff8", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
           </div>
-          <button style={{ width: "100%", background: "#7f6af7", color: "#fff", border: "none", borderRadius: 8, padding: ".85rem", fontSize: 15, fontWeight: 500, cursor: "pointer" }}>
-            Create account →
+
+          <button onClick={handleSignUp} disabled={loading}
+            style={{ width: "100%", background: loading ? "#4a4580" : "#7f6af7", color: "#fff", border: "none", borderRadius: 8, padding: ".85rem", fontSize: 15, fontWeight: 500, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+            {loading ? "Creating account..." : "Create account →"}
           </button>
         </div>
+
         <p style={{ textAlign: "center", fontSize: 14, color: "#8884a0", marginTop: "1.5rem" }}>
           Already have an account? <Link href="/login" style={{ color: "#7f6af7", textDecoration: "none" }}>Sign in</Link>
         </p>
