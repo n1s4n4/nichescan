@@ -13,19 +13,28 @@ export default function SignUp() {
     setLoading(true);
     setMessage("");
 
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
-    });
+    try {
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
-    const data = await res.json();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name } }
+      });
 
-    if (data.error) {
-      setMessage(data.error);
-    } else {
-      setMessage("Account created! Check your email to confirm.");
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage("✓ Account created! Check your email to confirm.");
+      }
+    } catch (e) {
+      setMessage("Something went wrong. Please try again.");
     }
+
     setLoading(false);
   };
 
@@ -51,10 +60,10 @@ export default function SignUp() {
 
           {message && (
             <div style={{
-              background: message.includes("error") || message.includes("Error") ? "rgba(239,68,68,0.1)" : "rgba(56,217,169,0.1)",
-              border: `1px solid ${message.includes("error") || message.includes("Error") ? "rgba(239,68,68,0.3)" : "rgba(56,217,169,0.3)"}`,
+              background: message.includes("✓") ? "rgba(56,217,169,0.1)" : "rgba(239,68,68,0.1)",
+              border: `1px solid ${message.includes("✓") ? "rgba(56,217,169,0.3)" : "rgba(239,68,68,0.3)"}`,
               borderRadius: 8, padding: ".75rem 1rem", marginBottom: "1rem", fontSize: 13,
-              color: message.includes("error") || message.includes("Error") ? "#f87171" : "#38d9a9"
+              color: message.includes("✓") ? "#38d9a9" : "#f87171"
             }}>
               {message}
             </div>
