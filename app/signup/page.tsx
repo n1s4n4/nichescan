@@ -4,8 +4,8 @@ import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-  "https://nihwvbcmssdxlsovabkn.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5paHd2YmNtc3NkeGxzb3ZhYmtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2Mjk4OTMsImV4cCI6MjA5MDIwNTg5M30.sTrwnfAf0feIEkAxVT5GUaCUQ4FFFu9jLCA_Q2pfynw"
+  "https://nibcrmvirgzrwfsospkh.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pYmNybXZpcmd6cndmc29zcGtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTUzMTEsImV4cCI6MjA5MDQzMTMxMX0.I2eDv6dqPMCeEGvGsjDAm5g-UJUy9Up2Wm_RUUmxdgw"
 );
 
 export default function SignUp() {
