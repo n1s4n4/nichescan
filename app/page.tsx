@@ -2,6 +2,13 @@
 import Link from "next/link";
 
 export default function Home() {
+  if (typeof window !== "undefined") {
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token")) {
+      window.location.href = "/dashboard";
+      return null;
+    }
+  }
   return (
     <main style={{
       background: "#0a0a0f",
