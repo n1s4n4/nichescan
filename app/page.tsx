@@ -1,23 +1,29 @@
 /* eslint-disable */
+"use client";
+import { useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://nibcrmvirgzrwfsospkh.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pYmNybXZpcmd6cndmc29zcGtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTUzMTEsImV4cCI6MjA5MDQzMTMxMX0.I2eDv6dqPMCeEGvGsjDAm5g-UJUy9Up2Wm_RUUmxdgw"
+);
 
 export default function Home() {
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     const hash = window.location.hash;
     if (hash && hash.includes("access_token")) {
-      window.location.href = "/dashboard";
-      return null;
+      supabase.auth.getSession().then(() => {
+        window.location.href = "/dashboard";
+      });
     }
-  }
+  }, []);
+
   return (
     <main style={{
-      background: "#0a0a0f",
-      minHeight: "100vh",
-      color: "#f0eff8",
+      background: "#0a0a0f", minHeight: "100vh", color: "#f0eff8",
       fontFamily: "'DM Sans', sans-serif",
     }}>
-
-      {/* NAV */}
       <nav style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "1.2rem 2.5rem", borderBottom: "1px solid #ffffff14",
@@ -39,7 +45,6 @@ export default function Home() {
         }}>Start free trial</Link>
       </nav>
 
-      {/* HERO */}
       <section style={{ padding: "7rem 2.5rem 5rem", maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: 8,
@@ -74,7 +79,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PRICING */}
       <section id="pricing" style={{ padding: "5rem 2.5rem", maxWidth: 960, margin: "0 auto", textAlign: "center" }}>
         <p style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 2, color: "#7f6af7", marginBottom: ".75rem" }}>Pricing</p>
         <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(1.8rem,3vw,2.6rem)", fontWeight: 800, letterSpacing: -1, marginBottom: "3rem" }}>
@@ -87,11 +91,11 @@ export default function Home() {
             { name: "Agency", price: "$99", features: ["Unlimited subreddits", "Unlimited product ideas", "All Pro features", "Team seats (5)", "API access"], missing: [] },
           ].map((plan) => (
             <div key={plan.name} style={{
-              background: "#13131c", border: `1px solid ${plan.featured ? "#7f6af7" : "#ffffff14"}`,
+              background: "#13131c", border: `1px solid ${(plan as any).featured ? "#7f6af7" : "#ffffff14"}`,
               borderRadius: 14, padding: "2rem", display: "flex", flexDirection: "column", gap: ".5rem",
               position: "relative",
             }}>
-              {plan.featured && (
+              {(plan as any).featured && (
                 <span style={{
                   position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)",
                   background: "#7f6af7", color: "#fff", fontSize: 11, padding: "3px 14px",
@@ -105,8 +109,8 @@ export default function Home() {
               {plan.missing.map(f => <div key={f} style={{ fontSize: 13, color: "#444", padding: ".3rem 0" }}>✗ {f}</div>)}
               <Link href="/signup" style={{
                 marginTop: "auto", paddingTop: "1.25rem", display: "block", textAlign: "center",
-                background: plan.featured ? "#7f6af7" : "transparent",
-                border: plan.featured ? "none" : "1px solid #ffffff22",
+                background: (plan as any).featured ? "#7f6af7" : "transparent",
+                border: (plan as any).featured ? "none" : "1px solid #ffffff22",
                 color: "#fff", borderRadius: 8, padding: ".75rem",
                 fontSize: 14, fontWeight: 500, textDecoration: "none",
               }}>Get started</Link>
@@ -115,7 +119,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer style={{
         borderTop: "1px solid #ffffff14", padding: "2.5rem",
         display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -128,7 +131,6 @@ export default function Home() {
           <a href="#" style={{ color: "#8884a0", textDecoration: "none" }}>Terms</a>
         </div>
       </footer>
-
     </main>
   );
 }
