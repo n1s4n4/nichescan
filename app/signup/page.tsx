@@ -1,6 +1,12 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://nihwvbcmssdxlsovabkn.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5paHd2YmNtc3NkeGxzb3ZhYmtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2Mjk4OTMsImV4cCI6MjA5MDIwNTg5M30.sTrwnfAf0feIEkAxVT5GUaCUQ4FFFu9jLCA_Q2pfynw"
+);
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -13,28 +19,17 @@ export default function SignUp() {
     setLoading(true);
     setMessage("");
 
-    try {
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name } }
-      });
-
-      if (error) {
-        setMessage(error.message);
-      } else {
-        setMessage("✓ Account created! Check your email to confirm.");
-      }
-    } catch (e) {
-      setMessage("Something went wrong. Please try again.");
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage("✓ Account created! Check your email to confirm.");
     }
-
     setLoading(false);
   };
 
