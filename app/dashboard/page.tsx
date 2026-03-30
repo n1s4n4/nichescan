@@ -1,7 +1,13 @@
 /* eslint-disable */
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://nibcrmvirgzrwfsospkh.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pYmNybXZpcmd6cndmc29zcGtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTUzMTEsImV4cCI6MjA5MDQzMTMxMX0.I2eDv6dqPMCeEGvGsjDAm5g-UJUy9Up2Wm_RUUmxdgw"
+);
 
 const painPoints = [
   { title: "Can't find good Notion templates for ADHD workflows", sub: "r/ADHD · 847 upvotes · 231 comments", score: 94, tag: "High demand", tagColor: "#fb923c", tagBg: "rgba(251,146,60,0.15)" },
@@ -29,6 +35,17 @@ const navItems = [
 
 export default function Dashboard() {
   const [active, setActive] = useState("Dashboard");
+const [userName, setUserName] = useState("User");
+const [userEmail, setUserEmail] = useState("");
+
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    if (data.user) {
+      setUserName(data.user.user_metadata?.full_name || "User");
+      setUserEmail(data.user.email || "");
+    }
+  });
+}, []);
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#0a0a0f", color: "#f0eff8", fontFamily: "'DM Sans', sans-serif" }}>
@@ -56,8 +73,8 @@ export default function Dashboard() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: ".6rem .75rem", borderRadius: 8, cursor: "pointer" }}>
             <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(127,106,247,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#7f6af7" }}>JS</div>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 500 }}>John Smith</div>
-              <div style={{ fontSize: 11, color: "#8884a0" }}>Pro plan</div>
+              <div style={{ fontSize: 12, fontWeight: 500 }}>{userName}</div>
+              <div style={{ fontSize: 11, color: "#8884a0" }}>{userEmail}</div>
             </div>
           </div>
         </div>
