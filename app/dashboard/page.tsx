@@ -41,11 +41,12 @@ export default function Dashboard() {
     setScanMessage("");
 
     try {
+      const redditUrl = `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`;
       const res = await fetch(
-        `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`,
-        { headers: { "User-Agent": "Mozilla/5.0" } }
+        `https://api.allorigins.win/get?url=${encodeURIComponent(redditUrl)}`
       );
-      const data = await res.json();
+      const raw = await res.json();
+      const data = JSON.parse(raw.contents);
 
       if (!data.data || !data.data.children) {
         setScanMessage("Subreddit not found. Check the name and try again.");
