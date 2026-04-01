@@ -6,17 +6,19 @@ function scorePainPoint(title: string, score: number, numComments: number): numb
     "help", "struggling", "can't", "cannot", "problem", "issue", "frustrated",
     "annoying", "difficult", "hard", "stuck", "confused", "lost", "fail",
     "broken", "wrong", "hate", "tired", "overwhelmed", "need", "how do i",
-    "why is", "anyone else", "no one", "nothing works"
+    "why is", "anyone else", "no one", "nothing works", "advice", "tips",
+    "question", "anyone", "what", "should i", "is it", "does anyone",
+    "looking for", "recommend", "best way", "struggling with"
   ];
 
   const titleLower = title.toLowerCase();
-  let painScore = 0;
+  let painScore = 10;
 
   painWords.forEach(word => {
-    if (titleLower.includes(word)) painScore += 15;
+    if (titleLower.includes(word)) painScore += 10;
   });
 
-  painScore += Math.min(score / 10, 30);
+  painScore += Math.min(score / 20, 20);
   painScore += Math.min(numComments / 5, 20);
   painScore = Math.min(Math.round(painScore), 99);
 
@@ -34,17 +36,22 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `https://www.reddit.com/r/${subreddit}/top.json?limit=25&t=week`,
+      `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`,
       { headers: { "User-Agent": "NicheScan/1.0" } }
     );
 
     const data = await res.json();
+
+    if (!data.data || !data.data.children) {
+      return NextResponse.json({ error: "Subreddit not found" });
+    }
+
     const posts = data.data.children;
 
     const painPoints = posts
       .filter((post: any) => !post.data.stickied)
       .map((post: any) => {
-        const { title, score, num_comments, url, subreddit: sub } = post.data;
+        const { title, score, num_comments, subreddit: sub } = post.data;
         const painScore = scorePainPoint(title, score, num_comments);
         return {
           title,
@@ -56,7 +63,6 @@ export async function POST(req: Request) {
           reddit_url: `https://reddit.com${post.data.permalink}`,
         };
       })
-    .filter((p: any) => p.score > 5)
       .sort((a: any, b: any) => b.score - a.score)
       .slice(0, 10);
 
@@ -65,4 +71,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to scan subreddit" });
   }
 }
-

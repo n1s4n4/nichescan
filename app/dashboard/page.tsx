@@ -1,7 +1,6 @@
 /* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -24,11 +23,7 @@ export default function Dashboard() {
   const [userEmail, setUserEmail] = useState("");
   const [subreddit, setSubreddit] = useState("");
   const [scanning, setScanning] = useState(false);
-  const [painPoints, setPainPoints] = useState([
-    { title: "Can't find good Notion templates for ADHD workflows", subreddit: "ADHD", upvotes: 847, comments: 231, score: 94, tag: "High demand", tagColor: "#fb923c", tagBg: "rgba(251,146,60,0.15)", reddit_url: "#" },
-    { title: "No beginner-friendly guide for cold email outreach", subreddit: "Entrepreneur", upvotes: 512, comments: 88, score: 87, tag: "Growing", tagColor: "#38d9a9", tagBg: "rgba(56,217,169,0.15)", reddit_url: "#" },
-    { title: "Struggling with consistent freelance pricing strategy", subreddit: "freelance", upvotes: 330, comments: 54, score: 79, tag: "Evergreen", tagColor: "#a78bfa", tagBg: "rgba(127,106,247,0.15)", reddit_url: "#" },
-  ]);
+  const [painPoints, setPainPoints] = useState<any[]>([]);
   const [scanMessage, setScanMessage] = useState("");
 
   useEffect(() => {
@@ -73,7 +68,6 @@ export default function Dashboard() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#0a0a0f", color: "#f0eff8", fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* SIDEBAR */}
       <aside style={{ width: 220, background: "#111118", borderRight: "1px solid #ffffff14", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: ".35rem", flexShrink: 0 }}>
         <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.1rem", padding: ".5rem .75rem", marginBottom: ".75rem", display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7f6af7", display: "inline-block" }} />
@@ -104,10 +98,7 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* MAIN */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
-
-        {/* TOP BAR */}
         <div style={{ padding: "1.25rem 2rem", borderBottom: "1px solid #ffffff14", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "1.3rem", letterSpacing: -.5, margin: 0 }}>Dashboard</h1>
@@ -117,7 +108,6 @@ export default function Dashboard() {
 
         <div style={{ padding: "1.5rem 2rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
-          {/* SCANNER INPUT */}
           <div style={{ background: "#111118", border: "1px solid #ffffff14", borderRadius: 10, padding: "1.25rem" }}>
             <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: ".9rem", marginBottom: "1rem" }}>Scan a subreddit</div>
             <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
@@ -144,7 +134,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* STAT CARDS */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".75rem" }}>
             {[
               { label: "Pains found", val: painPoints.length.toString(), sub: "from latest scan", subColor: "#38d9a9", valColor: "#7f6af7" },
@@ -160,7 +149,6 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* PAIN POINTS */}
           <div style={{ background: "#111118", border: "1px solid #ffffff14", borderRadius: 10, padding: "1.25rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
               <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: ".9rem" }}>Pain points</div>
@@ -168,29 +156,35 @@ export default function Dashboard() {
                 {painPoints.length} found
               </span>
             </div>
-            {painPoints.map((p, i) => (
-              <div key={i} style={{
-                borderBottom: i < painPoints.length - 1 ? "1px solid #ffffff0a" : "none",
-                padding: ".8rem 0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem",
-              }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{p.title}</div>
-                  <div style={{ fontSize: 11, color: "#8884a0", marginBottom: 4 }}>r/{p.subreddit} · {p.upvotes} upvotes · {p.comments} comments</div>
-                  <span style={{ fontSize: 10, fontWeight: 500, padding: "2px 7px", borderRadius: 4, background: p.tagBg, color: p.tagColor }}>{p.tag}</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
-                  <span style={{ fontSize: 11, color: "#8884a0" }}>{p.score}/100</span>
-                  <div style={{ width: 70, height: 4, background: "#ffffff14", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ width: `${p.score}%`, height: "100%", background: "#7f6af7", borderRadius: 2 }} />
-                  </div>
-                  <a href={p.reddit_url} target="_blank" rel="noopener noreferrer" style={{
-                    fontSize: 10, padding: "3px 10px", borderRadius: 5, cursor: "pointer",
-                    background: "rgba(127,106,247,0.15)", color: "#a78bfa", border: "none",
-                    textDecoration: "none", display: "inline-block"
-                  }}>View post →</a>
-                </div>
+            {painPoints.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "2rem", color: "#8884a0", fontSize: 13 }}>
+                No pain points yet — enter a subreddit above and click "Scan now"!
               </div>
-            ))}
+            ) : (
+              painPoints.map((p, i) => (
+                <div key={i} style={{
+                  borderBottom: i < painPoints.length - 1 ? "1px solid #ffffff0a" : "none",
+                  padding: ".8rem 0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem",
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{p.title}</div>
+                    <div style={{ fontSize: 11, color: "#8884a0", marginBottom: 4 }}>r/{p.subreddit} · {p.upvotes} upvotes · {p.comments} comments</div>
+                    <span style={{ fontSize: 10, fontWeight: 500, padding: "2px 7px", borderRadius: 4, background: p.tagBg, color: p.tagColor }}>{p.tag}</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
+                    <span style={{ fontSize: 11, color: "#8884a0" }}>{p.score}/100</span>
+                    <div style={{ width: 70, height: 4, background: "#ffffff14", borderRadius: 2, overflow: "hidden" }}>
+                      <div style={{ width: `${p.score}%`, height: "100%", background: "#7f6af7", borderRadius: 2 }} />
+                    </div>
+                    <a href={p.reddit_url} target="_blank" rel="noopener noreferrer" style={{
+                      fontSize: 10, padding: "3px 10px", borderRadius: 5, cursor: "pointer",
+                      background: "rgba(127,106,247,0.15)", color: "#a78bfa", border: "none",
+                      textDecoration: "none", display: "inline-block"
+                    }}>View post →</a>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
         </div>
