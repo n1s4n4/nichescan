@@ -56,7 +56,7 @@ export async function POST(req: Request) {
           reddit_url: `https://reddit.com${post.data.permalink}`,
         };
       })
-      .filter((p: any) => p.score > 30)
+    .filter((p: any) => p.score > 5)
       .sort((a: any, b: any) => b.score - a.score)
       .slice(0, 10);
 
