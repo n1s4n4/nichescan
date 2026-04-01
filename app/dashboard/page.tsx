@@ -47,6 +47,7 @@ export default function Dashboard() {
 );
 const data = await res.json();
 
+     console.log("Reddit data:", JSON.stringify(data).slice(0, 200));
       if (!data.data || !data.data.children) {
         setScanMessage("Subreddit not found. Check the name and try again.");
         setScanning(false);
