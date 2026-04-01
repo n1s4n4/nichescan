@@ -84,9 +84,9 @@ export default function Dashboard() {
 
       setPainPoints(posts);
       setScanMessage(`Found ${posts.length} pain points in r/${subreddit}!`);
-    } catch (e) {
-      setScanMessage("Scan failed. Please try again.");
-    }
+    } catch (e: any) {
+    setScanMessage(`Scan failed: ${e.message}`);
+}
     setScanning(false);
   };
 
