@@ -41,24 +41,48 @@ export default function Dashboard() {
     setScanMessage("");
 
     try {
-      const res = await fetch("/api/scan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subreddit }),
-      });
+      const res = await fetch(
+        `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`,
+        { headers: { "User-Agent": "Mozilla/5.0" } }
+      );
       const data = await res.json();
 
-      if (data.painPoints && data.painPoints.length > 0) {
-        const colored = data.painPoints.map((p: any) => ({
-          ...p,
-          tagColor: p.tag === "High demand" ? "#fb923c" : p.tag === "Growing" ? "#38d9a9" : "#a78bfa",
-          tagBg: p.tag === "High demand" ? "rgba(251,146,60,0.15)" : p.tag === "Growing" ? "rgba(56,217,169,0.15)" : "rgba(127,106,247,0.15)",
-        }));
-        setPainPoints(colored);
-        setScanMessage(`Found ${colored.length} pain points in r/${subreddit}!`);
-      } else {
-        setScanMessage("No pain points found. Try a different subreddit.");
+      if (!data.data || !data.data.children) {
+        setScanMessage("Subreddit not found. Check the name and try again.");
+        setScanning(false);
+        return;
       }
+
+      const painWords = ["help", "struggling", "can't", "cannot", "problem", "issue",
+        "frustrated", "difficult", "hard", "stuck", "confused", "lost", "fail",
+        "broken", "hate", "tired", "overwhelmed", "need", "how do i", "why is",
+        "anyone else", "advice", "tips", "question", "should i", "does anyone",
+        "recommend", "best way", "looking for"];
+
+      const posts = data.data.children
+        .filter((p: any) => !p.data.stickied)
+        .map((p: any) => {
+          const { title, score, num_comments, subreddit: sub } = p.data;
+          const titleLower = title.toLowerCase();
+          let painScore = 10;
+          painWords.forEach((word: string) => { if (titleLower.includes(word)) painScore += 10; });
+          painScore += Math.min(score / 20, 20);
+          painScore += Math.min(num_comments / 5, 20);
+          painScore = Math.min(Math.round(painScore), 99);
+          const tag = painScore >= 80 ? "High demand" : painScore >= 60 ? "Growing" : "Evergreen";
+          return {
+            title, subreddit: sub, upvotes: score, comments: num_comments,
+            score: painScore, tag,
+            tagColor: tag === "High demand" ? "#fb923c" : tag === "Growing" ? "#38d9a9" : "#a78bfa",
+            tagBg: tag === "High demand" ? "rgba(251,146,60,0.15)" : tag === "Growing" ? "rgba(56,217,169,0.15)" : "rgba(127,106,247,0.15)",
+            reddit_url: `https://reddit.com${p.data.permalink}`,
+          };
+        })
+        .sort((a: any, b: any) => b.score - a.score)
+        .slice(0, 10);
+
+      setPainPoints(posts);
+      setScanMessage(`Found ${posts.length} pain points in r/${subreddit}!`);
     } catch (e) {
       setScanMessage("Scan failed. Please try again.");
     }
@@ -186,7 +210,6 @@ export default function Dashboard() {
               ))
             )}
           </div>
-
         </div>
       </div>
     </div>
