@@ -43,10 +43,9 @@ export default function Dashboard() {
     try {
       const redditUrl = `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`;
       const res = await fetch(
-        `https://api.allorigins.win/get?url=${encodeURIComponent(redditUrl)}`
-      );
-      const raw = await res.json();
-      const data = JSON.parse(raw.contents);
+  `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`
+);
+const data = await res.json();
 
       if (!data.data || !data.data.children) {
         setScanMessage("Subreddit not found. Check the name and try again.");
