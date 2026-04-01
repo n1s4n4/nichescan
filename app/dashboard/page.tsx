@@ -43,11 +43,12 @@ export default function Dashboard() {
     try {
       const redditUrl = `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`;
       const res = await fetch(
-  `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`
-);
-const data = await res.json();
+        `https://thingproxy.freeboard.io/fetch/${redditUrl}`
+      );
+      const data = await res.json();
 
-     console.log("Reddit data:", JSON.stringify(data).slice(0, 200));
+      console.log("Reddit data:", JSON.stringify(data).slice(0, 200));
+
       if (!data.data || !data.data.children) {
         setScanMessage("Subreddit not found. Check the name and try again.");
         setScanning(false);
@@ -85,8 +86,8 @@ const data = await res.json();
       setPainPoints(posts);
       setScanMessage(`Found ${posts.length} pain points in r/${subreddit}!`);
     } catch (e: any) {
-    setScanMessage(`Scan failed: ${e.message}`);
-}
+      setScanMessage(`Scan failed: ${e.message}`);
+    }
     setScanning(false);
   };
 
